@@ -3,25 +3,24 @@
     <header>
       <h1>My Friends</h1>
     </header>
+    <new-friend @add-contact="addContact" />
     <ul>
       <friend-contact
-        name="Sahak Keshishyan"
-        phone-number="374 91 13 01 39"
-        email-address="sahak@gmail.com"
-        is-favorite="1"
-      />
-      <friend-contact
-        name="John Smith"
-        phone-number="374 91 12 36 55"
-        email-address="john@gmail.com"
-        is-favorite="0"
+        v-for="friend in friends"
+        :key="friend.id"
+        :id="friend.id"
+        :name="friend.name"
+        :phone-number="friend.phone"
+        :email-address="friend.email"
+        :is-favorite="friend.isFavorite"
+        @toggle-favorite="toggleFavoriteStatus"
+        @delete-friend="deleteContact"
       />
     </ul>
   </section>
 </template>
 
 <script>
-
 export default {
   data() {
     return {
@@ -31,15 +30,41 @@ export default {
           name: 'Sahak Keshishyan',
           phone: '+374 91 13 01 39',
           email: 'sahak@gmail.com',
+          isFavorite: true,
         },
         {
           id: 'jack',
           name: 'Jack Smith',
           phone: '+123 45 67 89 10',
           email: 'jack@gmail.com',
+          isFavorite: false,
         },
       ],
     }
+  },
+  methods: {
+    toggleFavoriteStatus(friendId) {
+      const friend = this.friends.find((friend) => friend.id === friendId)
+
+      friend.isFavorite = !friend.isFavorite
+    },
+    addContact(name, phone, email) {
+      console.log({ name, phone, email })
+      const newFriendContact = {
+        name,
+        phone,
+        email,
+        id: new Date().toISOString(),
+        isFavorite: false,
+      }
+
+      this.friends.push(newFriendContact)
+    },
+    deleteContact(friendId) {
+      const idx = this.friends.findIndex((f) => f.id === friendId)
+
+      this.friends.splice(idx, 1)
+    },
   },
 }
 </script>
@@ -75,7 +100,8 @@ header {
   list-style: none;
 }
 
-#app li {
+#app li,
+#app form {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
   margin: 1rem auto;
   border-radius: 10px;
@@ -107,5 +133,19 @@ header {
   background-color: #ec3169;
   border-color: #ec3169;
   box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.26);
+}
+
+#app input {
+  font: inherit;
+  padding: 0.15rem;
+}
+#app label {
+  font-weight: bold;
+  margin-right: 1rem;
+  width: 7rem;
+  display: inline-block;
+}
+#app form div {
+  margin: 1rem 0;
 }
 </style>
